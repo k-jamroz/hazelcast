@@ -26,6 +26,7 @@ import com.hazelcast.function.PredicateEx;
 import com.hazelcast.function.SupplierEx;
 import com.hazelcast.jet.config.ProcessingGuarantee;
 import com.hazelcast.jet.core.EventTimePolicy;
+import com.hazelcast.jet.core.Processor;
 import com.hazelcast.jet.core.Processor.Context;
 import com.hazelcast.jet.core.ProcessorMetaSupplier;
 import com.hazelcast.jet.core.ProcessorSupplier;
@@ -512,14 +513,25 @@ public final class SourceProcessors {
         checkSerializable(restoreSnapshotFn, "restoreSnapshotFn");
         checkNotNegative(preferredLocalParallelism + 1, "preferredLocalParallelism must >= -1");
         ProcessorSupplier procSup = ProcessorSupplier.of(
-                () -> new ConvenientSourceP<>(
-                        createFn,
-                        (BiConsumer<? super C, ? super SourceBufferConsumerSide<?>>) fillBufferFn,
-                        createSnapshotFn,
-                        restoreSnapshotFn,
-                        destroyFn,
-                        new SourceBufferImpl.Plain<>(isBatch),
-                        null));
+                new SupplierEx<Processor>() {
+                    @Override
+                    public Processor getEx() throws Exception {
+                        return new ConvenientSourceP<>(
+                                createFn,
+                                (BiConsumer<? super C, ? super SourceBufferConsumerSide<?>>) fillBufferFn,
+                                createSnapshotFn,
+                                restoreSnapshotFn,
+                                destroyFn,
+                                new SourceBufferImpl.Plain<>(isBatch),
+                                null);
+                    }
+
+                    @Nullable
+                    @Override
+                    public List<Permission> permissions() {
+                        return null;
+                    }
+                });
         return preferredLocalParallelism != 0
                 ? ProcessorMetaSupplier.of(preferredLocalParallelism, permission, procSup)
                 : ProcessorMetaSupplier.forceTotalParallelismOne(procSup, permission);

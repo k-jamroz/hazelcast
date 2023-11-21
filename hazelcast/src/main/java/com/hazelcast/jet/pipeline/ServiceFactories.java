@@ -19,11 +19,12 @@ package com.hazelcast.jet.pipeline;
 import com.hazelcast.function.BiFunctionEx;
 import com.hazelcast.function.ConsumerEx;
 import com.hazelcast.function.FunctionEx;
-import com.hazelcast.security.impl.function.SecuredFunctions;
+import com.hazelcast.function.Functions;
 import com.hazelcast.jet.core.Processor;
 import com.hazelcast.jet.core.ProcessorSupplier;
 import com.hazelcast.map.IMap;
 import com.hazelcast.replicatedmap.ReplicatedMap;
+import com.hazelcast.security.impl.function.SecuredFunctions;
 import com.hazelcast.security.permission.MapPermission;
 import com.hazelcast.security.permission.ReplicatedMapPermission;
 
@@ -222,7 +223,7 @@ public final class ServiceFactories {
             @Nonnull FunctionEx<? super Processor.Context, ? extends S> createServiceFn,
             @Nonnull ConsumerEx<? super S> destroyServiceFn
     ) {
-        return ServiceFactory.<Void>withCreateContextFn(c -> null)
+        return ServiceFactory.<Void>withCreateContextFn(Functions.constant(null))
                 .<S>withCreateServiceFn(SecuredFunctions.createServiceFn(createServiceFn))
                 .withDestroyServiceFn(destroyServiceFn);
     }

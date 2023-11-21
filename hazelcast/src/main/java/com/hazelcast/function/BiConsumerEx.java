@@ -61,4 +61,10 @@ public interface BiConsumerEx<T, U> extends BiConsumer<T, U>, Serializable {
             after.accept(left, right);
         };
     }
+
+    static <T, U> BiConsumerEx<T, U> noop() {
+        // TODO: override acceptEx and accept (breaking change?)
+        return (x, y) -> {
+        };
+    }
 }

@@ -36,7 +36,10 @@ import com.hazelcast.sql.impl.expression.ExpressionEvalContext;
 import com.hazelcast.sql.impl.row.EmptyRow;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.security.Permission;
+import java.util.List;
 import java.util.concurrent.CancellationException;
 
 import static com.hazelcast.jet.core.ProcessorMetaSupplier.forceTotalParallelismOne;
@@ -176,6 +179,12 @@ public final class RootResultConsumerSink implements Processor {
         @Override
         public int getClassId() {
             return JetSqlSerializerHook.ROOT_RESULT_CONSUMER_SINK_SUPPLIER;
+        }
+
+        @Nullable
+        @Override
+        public List<Permission> permissions() {
+            return null;
         }
     }
 }

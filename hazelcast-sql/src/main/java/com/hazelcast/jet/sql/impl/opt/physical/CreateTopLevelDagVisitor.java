@@ -17,10 +17,12 @@
 package com.hazelcast.jet.sql.impl.opt.physical;
 
 import com.hazelcast.cluster.Address;
+import com.hazelcast.function.BiConsumerEx;
 import com.hazelcast.function.BiFunctionEx;
 import com.hazelcast.function.ComparatorEx;
 import com.hazelcast.function.ConsumerEx;
 import com.hazelcast.function.FunctionEx;
+import com.hazelcast.function.Functions;
 import com.hazelcast.function.SupplierEx;
 import com.hazelcast.function.ToLongFunctionEx;
 import com.hazelcast.internal.util.MutableByte;
@@ -70,6 +72,7 @@ import org.apache.calcite.rel.SingleRel;
 import org.apache.calcite.rex.RexProgram;
 
 import javax.annotation.Nullable;
+import java.security.Permission;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -132,14 +135,13 @@ public class CreateTopLevelDagVisitor extends CreateDagVisitorBase<Vertex> {
         List<ExpressionValues> values = rel.values();
 
         return dag.newUniqueVertex("Values", convenientSourceP(
-                ExpressionEvalContext::from,
+                new ContextExpressionEvalContextFunctionEx(),
                 (context, buffer) -> {
                     values.forEach(vs -> vs.toValues(context).forEach(buffer::add));
                     buffer.close();
                 },
-                ctx -> null,
-                (ctx, states) -> {
-                },
+                Functions.constant(null),
+                BiConsumerEx.noop(),
                 ConsumerEx.noop(),
                 0,
                 true,
@@ -794,6 +796,19 @@ public class CreateTopLevelDagVisitor extends CreateDagVisitorBase<Vertex> {
         PlanObjectKey objectKey = table.getObjectKey();
         if (objectKey != null) {
             objectKeys.add(objectKey);
+        }
+    }
+
+    private static class ContextExpressionEvalContextFunctionEx implements FunctionEx<Processor.Context, ExpressionEvalContext> {
+        @Override
+        public ExpressionEvalContext applyEx(Processor.Context ctx1) throws Exception {
+            return ExpressionEvalContext.from(ctx1);
+        }
+
+        @Nullable
+        @Override
+        public List<Permission> permissions() {
+            return null;
         }
     }
 }

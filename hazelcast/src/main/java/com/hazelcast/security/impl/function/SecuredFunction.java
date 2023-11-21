@@ -19,6 +19,8 @@ package com.hazelcast.security.impl.function;
 import com.hazelcast.spi.annotation.PrivateApi;
 
 import javax.annotation.Nullable;
+import java.io.Serializable;
+import java.security.AccessControlException;
 import java.security.Permission;
 import java.util.List;
 
@@ -41,6 +43,9 @@ public interface SecuredFunction {
      */
     @Nullable
     default List<Permission> permissions() {
+        if (this instanceof Serializable) {
+            throw new AccessControlException("No permissions defined - cannot use " + this.getClass().getName());
+        }
         return null;
     }
 }

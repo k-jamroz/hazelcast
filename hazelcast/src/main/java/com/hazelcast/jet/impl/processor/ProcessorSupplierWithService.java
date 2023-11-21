@@ -25,7 +25,10 @@ import com.hazelcast.jet.pipeline.ServiceFactory;
 import com.hazelcast.security.PermissionsUtil;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.security.Permission;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
@@ -58,6 +61,13 @@ public final class ProcessorSupplierWithService<C, S> implements ProcessorSuppli
         PermissionsUtil.checkPermission(contextFn, context);
         serviceContext = contextFn.apply(context);
         serviceContext = (C) managedContext.initialize(serviceContext);
+    }
+
+    @Nullable
+    @Override
+    public List<Permission> permissions() {
+        // init checks permissions
+        return null;
     }
 
     @Nonnull @Override

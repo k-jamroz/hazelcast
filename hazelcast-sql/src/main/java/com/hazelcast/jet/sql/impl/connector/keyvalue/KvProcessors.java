@@ -32,7 +32,9 @@ import com.hazelcast.sql.impl.type.QueryDataType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -110,6 +112,12 @@ public final class KvProcessors {
         @Override
         public void readData(ObjectDataInput in) throws IOException {
             projectorSupplier = in.readObject();
+        }
+
+        @Nullable
+        @Override
+        public List<Permission> permissions() {
+            return null;
         }
     }
 }

@@ -26,8 +26,11 @@ import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 import com.hazelcast.security.PermissionsUtil;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.security.Permission;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,6 +50,13 @@ public class ProcessorSupplierFromSimpleSupplier implements ProcessorSupplier, I
     @Override
     public void init(@Nonnull Context context) throws Exception {
         PermissionsUtil.checkPermission(simpleSupplier, context);
+    }
+
+    @Nullable
+    @Override
+    public List<Permission> permissions() {
+        // permissions checked in init
+        return null;
     }
 
     @Override

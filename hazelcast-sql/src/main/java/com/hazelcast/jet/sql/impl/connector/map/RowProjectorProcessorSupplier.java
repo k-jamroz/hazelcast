@@ -35,7 +35,9 @@ import com.hazelcast.sql.impl.row.JetSqlRow;
 import com.hazelcast.sql.impl.type.QueryDataType;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -108,5 +110,11 @@ public final class RowProjectorProcessorSupplier implements ProcessorSupplier, I
     ) {
         return new RowProjectorProcessorSupplier(
                 KvRowProjector.supplier(paths, types, keyDescriptor, valueDescriptor, predicate, projection));
+    }
+
+    @Nullable
+    @Override
+    public List<Permission> permissions() {
+        return null;
     }
 }

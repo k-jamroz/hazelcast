@@ -26,7 +26,10 @@ import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.security.Permission;
+import java.util.List;
 
 public final class ProcessorSuppliers {
     public static class AggregatePSupplier<A, R> implements SupplierEx<Processor>, IdentifiedDataSerializable {
@@ -37,6 +40,12 @@ public final class ProcessorSuppliers {
 
         public AggregatePSupplier(AggregateOperation<A, R> aggrOp) {
             this.aggrOp = aggrOp;
+        }
+
+        @Nullable
+        @Override
+        public List<Permission> permissions() {
+            return null;
         }
 
         @Override

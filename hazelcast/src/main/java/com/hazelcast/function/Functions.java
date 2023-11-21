@@ -17,6 +17,9 @@
 package com.hazelcast.function;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.security.Permission;
+import java.util.List;
 import java.util.Map.Entry;
 
 /**
@@ -57,5 +60,20 @@ public final class Functions {
     @Nonnull
     public static <V> FunctionEx<Entry<?, V>, V> entryValue() {
         return Entry::getValue;
+    }
+
+    public static <T, V> FunctionEx<T, V> constant(V value) {
+        return new FunctionEx<T, V>() {
+            @Override
+            public V applyEx(T k) throws Exception {
+                return value;
+            }
+
+            @Nullable
+            @Override
+            public List<Permission> permissions() {
+                return null;
+            }
+        };
     }
 }
